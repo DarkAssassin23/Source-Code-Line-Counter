@@ -31,16 +31,17 @@ def loadFilesTypes():
 # add 'headers/includes' (minus the quotes) to your exclude.txt file to exclude that
 # entire directory
 def loadExcludeFiles():
-    try:
-        contents = []
-        with open("./exclude.txt","r") as f:
-            contents = f.readlines()
-        for x in contents:
-            excluded.append(x.strip())
-        return True
-    except:
-        print("ERROR: unable to read exclude.txt, make sure it exists in the same directory as this file")
-        return False
+    if(os.path.exists("./exclude.txt")):
+        try:
+            contents = []
+            with open("./exclude.txt","r") as f:
+                contents = f.readlines()
+            for x in contents:
+                excluded.append(x.strip())
+            return True
+        except:
+            print("ERROR: unable to read exclude.txt, make sure it exists in the same directory as this file")
+            return False
 
 files = []
 try:
