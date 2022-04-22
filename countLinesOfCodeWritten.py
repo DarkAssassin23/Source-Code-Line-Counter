@@ -1,7 +1,9 @@
+#!/usr/bin/env python3
 import sys, os, subprocess
 
 dirList = ""
 typesOfFiles = []
+excluded = []
 
 if(len(sys.argv) == 2):
     dirList = [sys.argv[1]]
@@ -21,16 +23,50 @@ def loadFilesTypes():
         print("ERROR: unable to read fileTypes.txt, make sure it exists in the same directory as this file")
         return False
 
+# If you are excluding directories, you need the full path to the directory
+# from your root directory. If you want to exclude individual files, just put the filename
+# plus its extention, no need for the full path.
+# Ex. your root directory is src and you have a subfolder inside your
+# headers folder called includes that you wanted to exclude, you would need to 
+# add 'headers/includes' (minus the quotes) to your exclude.txt file to exclude that
+# entire directory
+def loadExcludeFiles():
+    try:
+        contents = []
+        with open("./exclude.txt","r") as f:
+            contents = f.readlines()
+        for x in contents:
+            excluded.append(x.strip())
+        return True
+    except:
+        print("ERROR: unable to read exclude.txt, make sure it exists in the same directory as this file")
+        return False
 
 files = []
 try:
     
     loadFilesTypes()
+    loadExcludeFiles()
+    isFirstLoop = True
+    basePath = ""
     # Get all of the files in the directory
     while len(dirList) > 0:
         for (dirpath, dirnames, filenames) in os.walk(dirList.pop()):
-            dirList.extend(dirnames)
-            files.extend(map(lambda n: os.path.join(*n), zip([dirpath] * len(filenames), filenames)))
+            if(isFirstLoop):
+                basePath = dirpath+"/"
+                isFirstLoop = False
+            excludeDir = False
+            for x in excluded:
+                if(dirpath == basePath+x):
+                    excludeDir = True
+                    break
+                try:
+                    filenames.remove(x)
+                except:
+                    pass
+            if(not excludeDir):
+                dirList.extend(dirnames)
+                files.extend(map(lambda n: os.path.join(*n), zip([dirpath] * len(filenames), filenames)))
 
     for x in files:
         for i in typesOfFiles:
@@ -50,4 +86,3 @@ except Exception as e:
     print(e)
     print("Unable to compute the total number lines of code")
     print("If you manually entered a path name, make sure it is correct")
-
