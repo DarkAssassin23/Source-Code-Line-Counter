@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys, os, subprocess
+import sys, os, subprocess, platform
 
 dirList = ""
 typesOfFiles = []
@@ -72,7 +72,11 @@ try:
     for x in files:
         for i in typesOfFiles:
             if(x.endswith(i)):
-                cmd = "cat "+ x +" | wc -l" # command to get the lines of code for each file
+                cmd = ""
+                if(platform.system == "Windows"):
+                    cmd = "type "+ x +" | find /c /v \"\""
+                else:
+                    cmd = "cat "+ x +" | wc -l" # command to get the lines of code for each file
                 proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE) # pipes output to proc
                 linesOfCode += (int)(proc.stdout.read()) # casts the output as an int then adds it to the total
                 break
@@ -87,3 +91,4 @@ except Exception as e:
     print(e)
     print("Unable to compute the total number lines of code")
     print("If you manually entered a path name, make sure it is correct")
+
