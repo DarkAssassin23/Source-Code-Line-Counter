@@ -1,4 +1,4 @@
-# Souce Code Line Counter
+# Source Code Line Counter
 
 About
 -----------
