@@ -58,7 +58,7 @@ try:
                 isFirstLoop = False
             excludeDir = False
             for x in excluded:
-                if(dirpath == basePath+x):
+                if(dirpath.startswith(basePath+x)):
                     excludeDir = True
                     break
                 try:
